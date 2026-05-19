@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mantenimiento Sedes · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --bg:       #0e0f11;
+    --bg2:      #16181c;
+    --bg3:      #1e2027;
+    --border:   rgba(255,255,255,0.07);
+    --text:     #e8e6e0;
+    --muted:    #7a7870;
+    --accent:   #c8f064;
+    --exec:     #3dd68c;
+    --proc:     #f5a623;
+    --blue:     #5b9cf6;
+    --purple:   #a78bfa;
+    --red:      #f87171;
+    --font-head: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* --- HEADER --- */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2.5rem 1.25rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .header-left h1 {
+    font-family: var(--font-head);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    color: var(--text);
+    line-height: 1;
+  }
+  .header-left h1 span { color: var(--accent); }
+  .header-left p {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 5px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  /* --- FILTER BAR --- */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+  }
+  .filter-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .date-range {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .45rem .8rem;
+  }
+  .date-range span { font-size: 11px; color: var(--muted); }
+  input[type="date"] {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+    color-scheme: dark;
+  }
+  .btn-reset {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    padding: .5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-reset:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* --- SYNC BAR --- */
+  .sync-bar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: .65rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+  }
+  .sync-url {
+    flex: 1;
+    min-width: 260px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .45rem .85rem;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .sync-url::placeholder { color: var(--muted); }
+  .sync-url:focus { border-color: rgba(200,240,100,0.4); }
+  .btn-sync {
+    background: var(--accent);
+    border: none;
+    color: #0e0f11;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    padding: .5rem 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity .2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-sync:hover { opacity: .85; }
+  .btn-sync:disabled { opacity: .4; cursor: not-allowed; }
+  .sync-status {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .sync-status.ok  { color: var(--exec); }
+  .sync-status.err { color: var(--red); }
+  .spin {
+    display: inline-block;
+    width: 11px; height: 11px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* --- KPIs --- */
+  .main { padding: 2rem 2.5rem; }
+
+  #count-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 1rem;
+  }
+  #count-label strong { color: var(--accent); font-weight: 500; }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 2rem;
+  }
+  .kpi {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    transition: border-color .2s;
+  }
+  .kpi:hover { border-color: rgba(255,255,255,0.15); }
+  .kpi-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: .5rem;
+  }
+  .kpi-val {
+    font-family: var(--font-head);
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text);
+  }
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: .35rem;
+  }
+  .kpi.accent-exec .kpi-val { color: var(--exec); }
+  .kpi.accent-proc .kpi-val { color: var(--proc); }
+
+  /* --- CHART GRID --- */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    transition: border-color .2s;
+  }
+  .card:hover { border-color: rgba(255,255,255,0.13); }
+  .card.full { grid-column: 1 / -1; }
+  .card-title {
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: .6rem;
+  }
+  .legend span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .lsq { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+  .chart-wrap { position: relative; }
+  .h220 { height: 220px; }
+  .h260 { height: 260px; }
+  .h180 { height: 180px; }
+  .h300 { height: 300px; }
+
+  /* empty state */
+  .empty {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: var(--muted);
+    height: 100%;
+    position: absolute;
+    inset: 0;
+  }
+
+  /* --- FOOTER --- */
+  footer {
+    padding: 1.5rem 2.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .04em;
+    text-align: center;
+  }
+
+  @media (max-width: 700px) {
+    header { padding: 1rem 1.25rem; }
+    .main { padding: 1.25rem; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .charts-grid { grid-template-columns: 1fr; }
+    .card.full { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>MANTE<span>·</span>SEDES</h1>
+    <p>Dashboard de requerimientos · Formulario activo</p>
+  </div>
+  <div class="filter-bar">
+    <span class="filter-label">Período</span>
+    <div class="date-range">
+      <input type="date" id="date-from" value="2026-05-05">
+      <span>→</span>
+      <input type="date" id="date-to" value="2026-05-15">
+    </div>
+    <button class="btn-reset" onclick="resetDates()">Reset</button>
+  </div>
+</header>
+
+<div class="sync-bar">
+  <span class="filter-label">Google Sheet</span>
+  <input class="sync-url" id="sheet-url" type="text"
+    placeholder="Pegá acá la URL de tu Apps Script Web App...">
+  <button class="btn-sync" id="btn-sync" onclick="syncFromSheet()">
+    <span>↻</span> Actualizar datos
+  </button>
+  <span class="sync-status" id="sync-status">Usando datos embebidos</span>
+</div>
+
+<main class="main">
+  <p id="count-label"></p>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Total</div>
+      <div class="kpi-val" id="k-total">—</div>
+      <div class="kpi-sub" id="k-total-sub">requerimientos</div>
+    </div>
+    <div class="kpi accent-exec">
+      <div class="kpi-label">Ejecutados</div>
+      <div class="kpi-val" id="k-exec">—</div>
+      <div class="kpi-sub" id="k-exec-pct">—</div>
+    </div>
+    <div class="kpi accent-proc">
+      <div class="kpi-label">En proceso</div>
+      <div class="kpi-val" id="k-proc">—</div>
+      <div class="kpi-sub" id="k-proc-pct">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Sedes activas</div>
+      <div class="kpi-val" id="k-sedes">—</div>
+      <div class="kpi-sub" id="k-sedes-sub">—</div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+
+    <div class="card full">
+      <div class="card-title">Requerimientos por día</div>
+      <div class="chart-wrap h180">
+        <canvas id="c-dias"></canvas>
+        <div class="empty" id="empty-dias">Sin datos para el período</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Por sector</div>
+      <div class="legend">
+        <span><span class="lsq" style="background:var(--exec)"></span>Ejecutado</span>
+        <span><span class="lsq" style="background:var(--proc)"></span>En proceso</span>
+      </div>
+      <div class="chart-wrap h260">
+        <canvas id="c-sector"></canvas>
+        <div class="empty" id="empty-sector">Sin datos</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Por sede</div>
+      <div class="chart-wrap h260">
+        <canvas id="c-sede"></canvas>
+        <div class="empty" id="empty-sede">Sin datos</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Estado por sede (top 8)</div>
+      <div class="legend">
+        <span><span class="lsq" style="background:var(--exec)"></span>Ejecutado</span>
+        <span><span class="lsq" style="background:var(--proc)"></span>En proceso</span>
+      </div>
+      <div class="chart-wrap h260">
+        <canvas id="c-sede-estado"></canvas>
+        <div class="empty" id="empty-sede-estado">Sin datos</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Proveedores</div>
+      <div class="chart-wrap h260">
+        <canvas id="c-prov"></canvas>
+        <div class="empty" id="empty-prov">Sin datos</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Por supervisor</div>
+      <div class="legend">
+        <span><span class="lsq" style="background:var(--exec)"></span>Ejecutado</span>
+        <span><span class="lsq" style="background:var(--proc)"></span>En proceso</span>
+      </div>
+      <div class="chart-wrap h260">
+        <canvas id="c-sup"></canvas>
+        <div class="empty" id="empty-sup">Sin datos</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>MANTE·SEDES — datos al 15/05/2026</footer>
+
+<script>
+// ─── SYNC FROM GOOGLE SHEET ──────────────────────────────────────────────────
+const STORAGE_KEY = 'mante_sheet_url';
+let liveData = null;
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    document.getElementById('sheet-url').value = saved;
+    setStatus('URL guardada · presioná Actualizar para sincronizar', '');
+  }
+});
+
+async function syncFromSheet() {
+  const url = document.getElementById('sheet-url').value.trim();
+  if (!url) { setStatus('Pegá la URL del Apps Script primero', 'err'); return; }
+  localStorage.setItem(STORAGE_KEY, url);
+  const btn = document.getElementById('btn-sync');
+  btn.disabled = true;
+  setStatus('<span class="spin"></span>&nbsp;Conectando con Google Sheets...', '');
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if (!json.ok || !json.data) throw new Error('Respuesta inesperada del script');
+    liveData = json.data;
+    // Auto-expand date range to cover all live data
+    const dates = liveData.map(d=>d.date).sort();
+    if (dates.length) {
+      document.getElementById('date-from').value = dates[0];
+      document.getElementById('date-to').value   = dates[dates.length-1];
+    }
+    const now = new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+    setStatus(`✓ ${liveData.length} registros · actualizado ${now}`, 'ok');
+    update();
+  } catch(e) {
+    setStatus('✗ Error: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function setStatus(html, cls) {
+  const el = document.getElementById('sync-status');
+  el.innerHTML = html;
+  el.className = 'sync-status ' + (cls||'');
+}
+
+function activeData() { return liveData || RAW; }
+
+// ─── RAW DATA (fallback embebido) ────────────────────────────────────────────
+const RAW = [{"date":"2026-05-05","Supervisor":"Angel","Sede":"30 - NUÑEZ","Sector":"Baños","Estatus":"Ejecutado","Proveedor":"Diego Hiden"},{"date":"2026-05-05","Supervisor":"Angel","Sede":"30 - NUÑEZ","Sector":"Baños","Estatus":"En proceso","Proveedor":"Fer - 866"},{"date":"2026-05-05","Supervisor":"Angel","Sede":"30 - NUÑEZ","Sector":"Recepción","Estatus":"En proceso","Proveedor":"Fer - 866"},{"date":"2026-05-05","Supervisor":"Angel","Sede":"30 - NUÑEZ","Sector":"Entrenamiento","Estatus":"En proceso","Proveedor":"Fer - 866"},{"date":"2026-05-05","Supervisor":"Angel","Sede":"30 - NUÑEZ","Sector":"Baños","Estatus":"Ejecutado","Proveedor":"Diego Hiden"},{"date":"2026-05-05","Supervisor":"Angel","Sede":"30 - NUÑEZ","Sector":"Entrenamiento","Estatus":"Ejecutado","Proveedor":"Diego Hiden"},{"date":"2026-05-06","Supervisor":"Débora","Sede":"10 - URQUIZA","Sector":"Fachada","Estatus":"En proceso","Proveedor":null},{"date":"2026-05-08","Supervisor":"Débora","Sede":"10 - URQUIZA","Sector":"Baños","Estatus":"Ejecutado","Proveedor":null},{"date":"2026-05-08","Supervisor":"Bautista","Sede":"18 - PALERMO CHICO","Sector":"Baños","Estatus":"En proceso","Proveedor":"Active Clean"},{"date":"2026-05-08","Supervisor":"Bautista","Sede":"14 - CARRANZA","Sector":"Limpieza","Estatus":"Ejecutado","Proveedor":null},{"date":"2026-05-08","Supervisor":"Belén","Sede":"24 - TRIUNVIRATO","Sector":"Fachada","Estatus":"Ejecutado","Proveedor":"Cerrajería Marina"},{"date":"2026-05-08","Supervisor":"Lucas","Sede":"9 - ALMAGRO","Sector":"Recepción","Estatus":"En proceso","Proveedor":null},{"date":"2026-05-09","Supervisor":"Angel","Sede":"1 - RECOLETA","Sector":"Paisajismo","Estatus":"Ejecutado","Proveedor":"Diego Hiden"},{"date":"2026-05-11","Supervisor":"Valentin","Sede":"15 - HOLMBERG","Sector":"Entrenamiento","Estatus":"Ejecutado","Proveedor":"Diego Hiden"},{"date":"2026-05-11","Supervisor":"Diego","Sede":"5 - GUTIERREZ","Sector":"Baños","Estatus":"Ejecutado","Proveedor":"Diego Hiden"},{"date":"2026-05-11","Supervisor":"Angel","Sede":"1 - RECOLETA","Sector":"Fachada","Estatus":"Ejecutado","Proveedor":"Cerrajería Marina"},{"date":"2026-05-12","Supervisor":"Juan","Sede":"7 - CABALLITO","Sector":"Limpieza","Estatus":"Ejecutado","Proveedor":"Active Clean"},{"date":"2026-05-12","Supervisor":"Juan","Sede":"7 - CABALLITO","Sector":"Entrenamiento","Estatus":"En proceso","Proveedor":"Aldo"},{"date":"2026-05-12","Supervisor":"Juan","Sede":"25 - DIRECTORIO","Sector":"Entrenamiento","Estatus":"En proceso","Proveedor":"Aldo"},{"date":"2026-05-12","Supervisor":"Juan","Sede":"25 - DIRECTORIO","Sector":"Entrenamiento","Estatus":"Ejecutado","Proveedor":"Diego Hiden"},{"date":"2026-05-12","Supervisor":"Diego","Sede":"4 - BARRIO NORTE","Sector":"Entrenamiento","Estatus":"Ejecutado","Proveedor":"Diego Hiden"},{"date":"2026-05-12","Supervisor":"Angel","Sede":"13 - COLEGIALES","Sector":"Entrenamiento","Estatus":"Ejecutado","Proveedor":"Diego Hiden"},{"date":"2026-05-12","Supervisor":"Angel","Sede":"13 - COLEGIALES","Sector":"Baños","Estatus":"En proceso","Proveedor":null},{"date":"2026-05-12","Supervisor":"Belén","Sede":"24 - TRIUNVIRATO","Sector":"Fachada","Estatus":"En proceso","Proveedor":"Fer - 866"},{"date":"2026-05-12","Supervisor":"Belén","Sede":"24 - TRIUNVIRATO","Sector":"Paisajismo","Estatus":"Ejecutado","Proveedor":"Diego Hiden"},{"date":"2026-05-12","Supervisor":"Belén","Sede":"24 - TRIUNVIRATO","Sector":"Recepción","Estatus":"En proceso","Proveedor":"Fer - 866"},{"date":"2026-05-12","Supervisor":"Belén","Sede":"24 - TRIUNVIRATO","Sector":"Entrenamiento","Estatus":"En proceso","Proveedor":"Aldo"},{"date":"2026-05-12","Supervisor":"Belén","Sede":"24 - TRIUNVIRATO","Sector":"Entrenamiento","Estatus":"En proceso","Proveedor":"Diego Hiden"},{"date":"2026-05-13","Supervisor":"Antonio","Sede":"3 - PALERMO SOHO","Sector":"Recepción","Estatus":"Ejecutado","Proveedor":null},{"date":"2026-05-13","Supervisor":"Antonio","Sede":"8 - SANTA FE","Sector":"Recepción","Estatus":"Ejecutado","Proveedor":null},{"date":"2026-05-13","Supervisor":"Antonio","Sede":"3 - PALERMO SOHO","Sector":"Entrenamiento","Estatus":"Ejecutado","Proveedor":null},{"date":"2026-05-13","Supervisor":"Antonio","Sede":"3 - PALERMO SOHO","Sector":"Entrenamiento","Estatus":"En proceso","Proveedor":null},{"date":"2026-05-13","Supervisor":"Valeria","Sede":"26 - MANSILLA","Sector":"Limpieza","Estatus":"Ejecutado","Proveedor":null},{"date":"2026-05-13","Supervisor":"Lucas","Sede":"11 - SCALABRINI","Sector":"Fachada","Estatus":"En proceso","Proveedor":null},{"date":"2026-05-14","Supervisor":"Angel","Sede":"13 - COLEGIALES","Sector":"Baños","Estatus":"Ejecutado","Proveedor":"Diego Hiden"},{"date":"2026-05-14","Supervisor":"Diego","Sede":"4 - BARRIO NORTE","Sector":"Elementos Deportivos","Estatus":"En proceso","Proveedor":"Compras"},{"date":"2026-05-14","Supervisor":"Bautista","Sede":"18 - PALERMO CHICO","Sector":"Elementos Deportivos","Estatus":"En proceso","Proveedor":"Compras"},{"date":"2026-05-14","Supervisor":"Bautista","Sede":"18 - PALERMO CHICO","Sector":"Fachada","Estatus":"En proceso","Proveedor":null},{"date":"2026-05-14","Supervisor":"Lucas","Sede":"11 - SCALABRINI","Sector":"Entrenamiento","Estatus":"En proceso","Proveedor":"Aldo"},{"date":"2026-05-14","Supervisor":"Angel","Sede":"30 - NUÑEZ","Sector":"Entrenamiento","Estatus":"En proceso","Proveedor":"Diego Hiden"},{"date":"2026-05-14","Supervisor":"Lucas","Sede":"9 - ALMAGRO","Sector":"Elementos Deportivos","Estatus":"En proceso","Proveedor":"Compras"},{"date":"2026-05-14","Supervisor":"Lucas","Sede":"11 - SCALABRINI","Sector":"Elementos Deportivos","Estatus":"En proceso","Proveedor":"Compras"},{"date":"2026-05-14","Supervisor":"Lucas","Sede":"9 - ALMAGRO","Sector":"Fachada","Estatus":"Ejecutado","Proveedor":"Diego Hiden"},{"date":"2026-05-14","Supervisor":"Lucas","Sede":"12 - JUNCAL","Sector":"Elementos Deportivos","Estatus":"En proceso","Proveedor":"Compras"},{"date":"2026-05-14","Supervisor":"Diego","Sede":"4 - BARRIO NORTE","Sector":"Elementos Deportivos","Estatus":"En proceso","Proveedor":"Compras"},{"date":"2026-05-14","Supervisor":"Lucas","Sede":"9 - ALMAGRO","Sector":"Fachada","Estatus":"En proceso","Proveedor":"Cristales Coronel"},{"date":"2026-05-15","Supervisor":"Lucas","Sede":"23 - P. CENTENARIO","Sector":"Recepción","Estatus":"En proceso","Proveedor":"Gustavo"},{"date":"2026-05-15","Supervisor":"Diego","Sede":"4 - BARRIO NORTE","Sector":"Elementos Deportivos","Estatus":"En proceso","Proveedor":"Compras"}];
+
+// ─── CHART DEFAULTS ──────────────────────────────────────────────────────────
+const muted = '#7a7870';
+const gridC = 'rgba(255,255,255,0.06)';
+const EXEC = '#3dd68c', PROC = '#f5a623', BLUE = '#5b9cf6', PURPLE = '#a78bfa';
+const baseOpts = { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} } };
+const axis = {
+  x:{ ticks:{color:muted,font:{size:10,family:"'DM Mono'"}}, grid:{display:false} },
+  y:{ ticks:{color:muted,font:{size:10,family:"'DM Mono'"}}, grid:{color:gridC} }
+};
+
+// ─── CHART INSTANCES ─────────────────────────────────────────────────────────
+let charts = {};
+
+function destroyAll() {
+  Object.values(charts).forEach(c => c.destroy());
+  charts = {};
+}
+
+function count(arr, key) {
+  return arr.reduce((m, d) => { m[d[key]] = (m[d[key]]||0)+1; return m; }, {});
+}
+function countBy2(arr, key1, key2, val2) {
+  return arr.filter(d=>d[key2]===val2).reduce((m,d)=>{ m[d[key1]]=(m[d[key1]]||0)+1; return m; },{});
+}
+
+function update() {
+  const from = document.getElementById('date-from').value;
+  const to   = document.getElementById('date-to').value;
+  const data = activeData().filter(d => d.date >= from && d.date <= to);
+
+  destroyAll();
+
+  // ── KPIs
+  const total = data.length;
+  const exec  = data.filter(d=>d.Estatus==='Ejecutado').length;
+  const proc  = data.filter(d=>d.Estatus==='En proceso').length;
+  const sedes = new Set(data.map(d=>d.Sede)).size;
+
+  document.getElementById('k-total').textContent = total;
+  document.getElementById('k-exec').textContent  = exec;
+  document.getElementById('k-proc').textContent  = proc;
+  document.getElementById('k-sedes').textContent = sedes;
+  document.getElementById('k-exec-pct').textContent = total ? Math.round(exec/total*100)+'% del total' : '—';
+  document.getElementById('k-proc-pct').textContent = total ? Math.round(proc/total*100)+'% del total' : '—';
+  document.getElementById('k-sedes-sub').textContent = sedes === 1 ? 'sede' : 'sedes con reclamos';
+  document.getElementById('count-label').innerHTML = `Mostrando <strong>${total}</strong> requerimiento${total!==1?'s':''} · ${from} → ${to}`;
+
+  // ── DÍAS (line chart)
+  const byDay = count(data, 'date');
+  const allDates = [];
+  if (from && to) {
+    let cur = new Date(from+'T00:00:00');
+    const end = new Date(to+'T00:00:00');
+    while (cur <= end) {
+      allDates.push(cur.toISOString().slice(0,10));
+      cur.setDate(cur.getDate()+1);
+    }
+  }
+  const dayLabels = allDates.map(d => d.slice(5).replace('-','/'));
+  const dayVals   = allDates.map(d => byDay[d]||0);
+  showEmpty('dias', total===0);
+  if (total > 0) {
+    charts['dias'] = new Chart(document.getElementById('c-dias'), {
+      type:'line',
+      data:{
+        labels: dayLabels,
+        datasets:[{
+          data: dayVals,
+          borderColor: '#c8f064',
+          backgroundColor: 'rgba(200,240,100,0.1)',
+          fill: true, tension:.35,
+          pointBackgroundColor: '#c8f064', pointRadius:4, pointHoverRadius:6
+        }]
+      },
+      options:{...baseOpts, scales:{ x:{...axis.x}, y:{...axis.y, min:0, ticks:{...axis.y.ticks, stepSize:1}} }}
+    });
+  }
+
+  // ── SECTOR stacked
+  const sectors = [...new Set(RAW.map(d=>d.Sector))].sort();
+  const secExec = sectors.map(s=>data.filter(d=>d.Sector===s&&d.Estatus==='Ejecutado').length);
+  const secProc = sectors.map(s=>data.filter(d=>d.Sector===s&&d.Estatus==='En proceso').length);
+  const secTotal = sectors.map((_,i)=>secExec[i]+secProc[i]);
+  const secOrder = sectors.map((_,i)=>i).sort((a,b)=>secTotal[b]-secTotal[a]).filter(i=>secTotal[i]>0);
+  showEmpty('sector', secOrder.length===0);
+  if (secOrder.length > 0) {
+    charts['sector'] = new Chart(document.getElementById('c-sector'), {
+      type:'bar',
+      data:{
+        labels: secOrder.map(i=>sectors[i]),
+        datasets:[
+          {label:'Ejecutado', data:secOrder.map(i=>secExec[i]), backgroundColor:EXEC, borderRadius:4, stack:'s'},
+          {label:'En proceso',data:secOrder.map(i=>secProc[i]), backgroundColor:PROC, borderRadius:4, stack:'s'}
+        ]
+      },
+      options:{...baseOpts, scales:{
+        x:{...axis.x, ticks:{...axis.x.ticks, maxRotation:30, autoSkip:false}},
+        y:{...axis.y, ticks:{...axis.y.ticks, stepSize:1}}
+      }}
+    });
+  }
+
+  // ── SEDE total (horizontal bar)
+  const sedeCount = count(data, 'Sede');
+  const sedeOrder = Object.entries(sedeCount).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  showEmpty('sede', sedeOrder.length===0);
+  if (sedeOrder.length > 0) {
+    charts['sede'] = new Chart(document.getElementById('c-sede'), {
+      type:'bar',
+      data:{
+        labels: sedeOrder.map(([s])=>s.replace(' - ',' · ')),
+        datasets:[{
+          data: sedeOrder.map(([,n])=>n),
+          backgroundColor: BLUE,
+          borderRadius:4
+        }]
+      },
+      options:{...baseOpts,
+        indexAxis:'y',
+        scales:{
+          x:{...axis.x, ticks:{...axis.x.ticks, stepSize:1}},
+          y:{...axis.y, grid:{display:false}}
+        }
+      }
+    });
+  }
+
+  // ── SEDE x ESTADO top 8
+  const allSedes = [...new Set(data.map(d=>d.Sede))];
+  const sedeExec = allSedes.map(s=>data.filter(d=>d.Sede===s&&d.Estatus==='Ejecutado').length);
+  const sedeProc = allSedes.map(s=>data.filter(d=>d.Sede===s&&d.Estatus==='En proceso').length);
+  const sedeT = allSedes.map((_,i)=>sedeExec[i]+sedeProc[i]);
+  const sedeIdx = allSedes.map((_,i)=>i).sort((a,b)=>sedeT[b]-sedeT[a]).slice(0,8).filter(i=>sedeT[i]>0);
+  showEmpty('sede-estado', sedeIdx.length===0);
+  if (sedeIdx.length > 0) {
+    charts['sede-estado'] = new Chart(document.getElementById('c-sede-estado'), {
+      type:'bar',
+      data:{
+        labels: sedeIdx.map(i=>allSedes[i].replace(' - ',' · ')),
+        datasets:[
+          {label:'Ejecutado', data:sedeIdx.map(i=>sedeExec[i]), backgroundColor:EXEC, borderRadius:4, stack:'s'},
+          {label:'En proceso',data:sedeIdx.map(i=>sedeProc[i]), backgroundColor:PROC, borderRadius:4, stack:'s'}
+        ]
+      },
+      options:{...baseOpts, scales:{
+        x:{...axis.x, ticks:{...axis.x.ticks, maxRotation:30, autoSkip:false}},
+        y:{...axis.y, ticks:{...axis.y.ticks, stepSize:1}}
+      }}
+    });
+  }
+
+  // ── PROVEEDORES
+  const provData = data.filter(d=>d.Proveedor);
+  const provCount = count(provData, 'Proveedor');
+  const provOrder = Object.entries(provCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  showEmpty('prov', provOrder.length===0);
+  if (provOrder.length > 0) {
+    charts['prov'] = new Chart(document.getElementById('c-prov'), {
+      type:'bar',
+      data:{
+        labels: provOrder.map(([p])=>p),
+        datasets:[{
+          data: provOrder.map(([,n])=>n),
+          backgroundColor: PURPLE,
+          borderRadius:4
+        }]
+      },
+      options:{...baseOpts,
+        indexAxis:'y',
+        scales:{
+          x:{...axis.x, ticks:{...axis.x.ticks, stepSize:1}},
+          y:{...axis.y, grid:{display:false}, ticks:{...axis.y.ticks}}
+        }
+      }
+    });
+  }
+
+  // ── SUPERVISOR stacked
+  const sups = [...new Set(data.map(d=>d.Supervisor))];
+  const supExec = sups.map(s=>data.filter(d=>d.Supervisor===s&&d.Estatus==='Ejecutado').length);
+  const supProc = sups.map(s=>data.filter(d=>d.Supervisor===s&&d.Estatus==='En proceso').length);
+  const supT    = sups.map((_,i)=>supExec[i]+supProc[i]);
+  const supIdx  = sups.map((_,i)=>i).sort((a,b)=>supT[b]-supT[a]).filter(i=>supT[i]>0);
+  showEmpty('sup', supIdx.length===0);
+  if (supIdx.length > 0) {
+    charts['sup'] = new Chart(document.getElementById('c-sup'), {
+      type:'bar',
+      data:{
+        labels: supIdx.map(i=>sups[i]),
+        datasets:[
+          {label:'Ejecutado', data:supIdx.map(i=>supExec[i]), backgroundColor:EXEC, borderRadius:4, stack:'s'},
+          {label:'En proceso',data:supIdx.map(i=>supProc[i]), backgroundColor:PROC, borderRadius:4, stack:'s'}
+        ]
+      },
+      options:{...baseOpts, scales:{
+        x:{...axis.x, ticks:{...axis.x.ticks, autoSkip:false}},
+        y:{...axis.y, ticks:{...axis.y.ticks, stepSize:1}}
+      }}
+    });
+  }
+}
+
+function showEmpty(id, show) {
+  const el = document.getElementById('empty-'+id);
+  const canvas = document.getElementById('c-'+id);
+  if (!el || !canvas) return;
+  el.style.display = show ? 'flex' : 'none';
+  canvas.style.display = show ? 'none' : 'block';
+}
+
+function resetDates() {
+  document.getElementById('date-from').value = '2026-05-05';
+  document.getElementById('date-to').value   = '2026-05-15';
+  update();
+}
+
+document.getElementById('date-from').addEventListener('change', update);
+document.getElementById('date-to').addEventListener('change', update);
+
+update();
+</script>
+</body>
+</html>
