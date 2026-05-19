@@ -6,7 +6,7 @@
 <title>Mantenimiento de Sedes · CORE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
   :root {
@@ -53,6 +53,15 @@
     gap: 1.25rem;
   }
   .logo-img { height: 26px; width: auto; }
+  .logo-text {
+    font-family: 'Barlow', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: .18em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
   .header-divider {
     width: 1px;
     height: 24px;
@@ -256,16 +265,7 @@
 
 <header>
   <div class="header-left">
-    <svg class="logo-img" height="28" viewBox="0 0 340 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="CORE">
-      <!-- C -->
-      <path d="M58 14C42 14 28 27 28 40C28 53 42 66 58 66C68 66 77 61 82 53L70 47C67 51 63 53 58 53C49 53 41 47 41 40C41 33 49 27 58 27C63 27 67 29 70 33L82 27C77 19 68 14 58 14Z" fill="white"/>
-      <!-- O -->
-      <path d="M130 14C112 14 98 27 98 40C98 53 112 66 130 66C148 66 162 53 162 40C162 27 148 14 130 14ZM130 53C119 53 111 47 111 40C111 33 119 27 130 27C141 27 149 33 149 40C149 47 141 53 130 53Z" fill="white"/>
-      <!-- R -->
-      <path d="M178 15H178V65H191V47H200L212 65H227L213 45C220 42 225 36 225 29C225 21 218 15 209 15H178ZM191 27H208C212 27 214 29 214 31C214 33 212 35 208 35H191V27Z" fill="white"/>
-      <!-- E -->
-      <path d="M244 15V65H312V53H257V46H306V34H257V27H312V15H244Z" fill="white"/>
-    </svg>
+    <span class="logo-text">CORE</span>
     <div class="header-divider"></div>
     <div class="header-title"><strong>Mantenimiento</strong> de Sedes</div>
   </div>
