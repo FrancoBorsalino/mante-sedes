@@ -365,19 +365,50 @@
 </footer>
 
 <script>
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwDjVeawvLg40xqaKy2nQaG5Q1JFGd42eI-30UrzWmABTgOQ6efjrIh1kTTCTORVY1m/exec';
-// ⚠️ IMPORTANTE: el Apps Script debe incluir el campo "Descripcion" (columna F, índice 5) esto está ok
- 
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzj3NWR6My3fWnx21Is-kh-F3LssbozAxsYEy1byhY9MBkRZvWxQU4CcIf2S7zxvOyP/exec';
 const ALL_SEDES = ["1 - RECOLETA", "2 - CAÑITAS II", "3 - PALERMO SOHO", "4 - BARRIO NORTE", "5 - GUTIERREZ", "6 - CABILDO", "7 - CABALLITO", "8 - SANTA FE", "9 - ALMAGRO", "10 - URQUIZA", "11 - SCALABRINI", "12 - JUNCAL", "13 - COLEGIALES", "14 - CARRANZA", "15 - HOLMBERG", "18 - PALERMO CHICO", "19 - OLIVOS", "23 - P. CENTENARIO", "24 - TRIUNVIRATO", "25 - DIRECTORIO", "26 - MANSILLA", "30 - NUÑEZ", "31 - MARTINEZ"];
-
 const RAW = [{"date": "2026-05-05", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Baños", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-05", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Baños", "Estatus": "En proceso", "Proveedor": "Fer - 866"}, {"date": "2026-05-05", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Recepción", "Estatus": "En proceso", "Proveedor": "Fer - 866"}, {"date": "2026-05-05", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Fer - 866"}, {"date": "2026-05-05", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Baños", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-05", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Entrenamiento", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-06", "Supervisor": "Débora", "Sede": "10 - URQUIZA", "Sector": "Fachada", "Estatus": "En proceso", "Proveedor": null}, {"date": "2026-05-08", "Supervisor": "Débora", "Sede": "10 - URQUIZA", "Sector": "Baños", "Estatus": "Ejecutado", "Proveedor": null}, {"date": "2026-05-08", "Supervisor": "Bautista", "Sede": "18 - PALERMO CHICO", "Sector": "Baños", "Estatus": "En proceso", "Proveedor": "Active Clean"}, {"date": "2026-05-08", "Supervisor": "Bautista", "Sede": "14 - CARRANZA", "Sector": "Limpieza", "Estatus": "Ejecutado", "Proveedor": null}, {"date": "2026-05-08", "Supervisor": "Belén", "Sede": "24 - TRIUNVIRATO", "Sector": "Fachada", "Estatus": "Ejecutado", "Proveedor": "Cerrajería Marina"}, {"date": "2026-05-08", "Supervisor": "Lucas", "Sede": "9 - ALMAGRO", "Sector": "Recepción", "Estatus": "En proceso", "Proveedor": null}, {"date": "2026-05-09", "Supervisor": "Angel", "Sede": "1 - RECOLETA", "Sector": "Paisajismo", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-11", "Supervisor": "Valentin", "Sede": "15 - HOLMBERG", "Sector": "Entrenamiento", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-11", "Supervisor": "Diego", "Sede": "5 - GUTIERREZ", "Sector": "Baños", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-11", "Supervisor": "Angel", "Sede": "1 - RECOLETA", "Sector": "Fachada", "Estatus": "Ejecutado", "Proveedor": "Cerrajería Marina"}, {"date": "2026-05-12", "Supervisor": "Juan", "Sede": "7 - CABALLITO", "Sector": "Limpieza", "Estatus": "Ejecutado", "Proveedor": "Active Clean"}, {"date": "2026-05-12", "Supervisor": "Juan", "Sede": "7 - CABALLITO", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Aldo"}, {"date": "2026-05-12", "Supervisor": "Juan", "Sede": "25 - DIRECTORIO", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Aldo"}, {"date": "2026-05-12", "Supervisor": "Juan", "Sede": "25 - DIRECTORIO", "Sector": "Entrenamiento", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-12", "Supervisor": "Diego", "Sede": "4 - BARRIO NORTE", "Sector": "Entrenamiento", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-12", "Supervisor": "Angel", "Sede": "13 - COLEGIALES", "Sector": "Entrenamiento", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-12", "Supervisor": "Angel", "Sede": "13 - COLEGIALES", "Sector": "Baños", "Estatus": "En proceso", "Proveedor": null}, {"date": "2026-05-12", "Supervisor": "Belén", "Sede": "24 - TRIUNVIRATO", "Sector": "Fachada", "Estatus": "En proceso", "Proveedor": "Fer - 866"}, {"date": "2026-05-12", "Supervisor": "Belén", "Sede": "24 - TRIUNVIRATO", "Sector": "Paisajismo", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-12", "Supervisor": "Belén", "Sede": "24 - TRIUNVIRATO", "Sector": "Recepción", "Estatus": "En proceso", "Proveedor": "Fer - 866"}, {"date": "2026-05-12", "Supervisor": "Belén", "Sede": "24 - TRIUNVIRATO", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Aldo"}, {"date": "2026-05-12", "Supervisor": "Belén", "Sede": "24 - TRIUNVIRATO", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Diego Hiden"}, {"date": "2026-05-13", "Supervisor": "Antonio", "Sede": "3 - PALERMO SOHO", "Sector": "Recepción", "Estatus": "Ejecutado", "Proveedor": null}, {"date": "2026-05-13", "Supervisor": "Antonio", "Sede": "8 - SANTA FE", "Sector": "Recepción", "Estatus": "Ejecutado", "Proveedor": null}, {"date": "2026-05-13", "Supervisor": "Antonio", "Sede": "3 - PALERMO SOHO", "Sector": "Entrenamiento", "Estatus": "Ejecutado", "Proveedor": null}, {"date": "2026-05-13", "Supervisor": "Antonio", "Sede": "3 - PALERMO SOHO", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": null}, {"date": "2026-05-13", "Supervisor": "Valeria", "Sede": "26 - MANSILLA", "Sector": "Limpieza", "Estatus": "Ejecutado", "Proveedor": null}, {"date": "2026-05-13", "Supervisor": "Lucas", "Sede": "11 - SCALABRINI", "Sector": "Fachada", "Estatus": "En proceso", "Proveedor": null}, {"date": "2026-05-14", "Supervisor": "Angel", "Sede": "13 - COLEGIALES", "Sector": "Baños", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-14", "Supervisor": "Diego", "Sede": "4 - BARRIO NORTE", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-14", "Supervisor": "Bautista", "Sede": "18 - PALERMO CHICO", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-14", "Supervisor": "Bautista", "Sede": "18 - PALERMO CHICO", "Sector": "Fachada", "Estatus": "En proceso", "Proveedor": null}, {"date": "2026-05-14", "Supervisor": "Lucas", "Sede": "11 - SCALABRINI", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Aldo"}, {"date": "2026-05-14", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Diego Hiden"}, {"date": "2026-05-14", "Supervisor": "Lucas", "Sede": "9 - ALMAGRO", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-14", "Supervisor": "Lucas", "Sede": "11 - SCALABRINI", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-14", "Supervisor": "Lucas", "Sede": "9 - ALMAGRO", "Sector": "Fachada", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-14", "Supervisor": "Lucas", "Sede": "12 - JUNCAL", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-14", "Supervisor": "Diego", "Sede": "4 - BARRIO NORTE", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-14", "Supervisor": "Lucas", "Sede": "9 - ALMAGRO", "Sector": "Fachada", "Estatus": "En proceso", "Proveedor": "Cristales Coronel"}, {"date": "2026-05-15", "Supervisor": "Lucas", "Sede": "23 - P. CENTENARIO", "Sector": "Recepción", "Estatus": "En proceso", "Proveedor": "Gustavo"}, {"date": "2026-05-15", "Supervisor": "Diego", "Sede": "4 - BARRIO NORTE", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-15", "Supervisor": "Bautista", "Sede": "18 - PALERMO CHICO", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-15", "Supervisor": "Juliana", "Sede": "6 - CABILDO", "Sector": "Baños", "Estatus": "En proceso", "Proveedor": null}];
 
-let liveData = null;
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let liveData      = null;
 let liveEdAnalisis = null;
-let edData = [];
-let charts = {};
+let edData        = [];
+let charts        = {};
 
-// ── SYNC ─────────────────────────────────────────────────────────────────────
+// ── CONSTANTS ─────────────────────────────────────────────────────────────────
+const MUTED = '#9DA5A8';
+const GRID  = 'rgba(255,255,255,0.05)';
+const EXEC  = '#4CAF7D';
+const PROC  = '#FF5C33';
+const base  = { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} };
+const ax    = {
+  x: { ticks:{color:MUTED, font:{size:10, family:'Roboto'}}, grid:{display:false} },
+  y: { ticks:{color:MUTED, font:{size:10, family:'Roboto'}}, grid:{color:GRID} }
+};
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function activeData() { return liveData || RAW; }
+
+function destroyAll() {
+  Object.values(charts).forEach(c => c.destroy());
+  charts = {};
+}
+
+function showEmpty(id, show) {
+  const el = document.getElementById('empty-' + id);
+  const cv = document.getElementById('c-' + id);
+  if (!el || !cv) return;
+  el.style.display = show ? 'flex' : 'none';
+  cv.style.display = show ? 'none' : 'block';
+}
+
+function setStatus(html, cls) {
+  const el = document.getElementById('sync-status');
+  el.innerHTML = html;
+  el.className = 'sync-status ' + (cls || '');
+}
+
+// ── SYNC ──────────────────────────────────────────────────────────────────────
 async function syncFromSheet() {
   const btn = document.getElementById('btn-sync');
   btn.disabled = true;
@@ -387,7 +418,7 @@ async function syncFromSheet() {
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
     if (!json.ok || !json.data) throw new Error('Respuesta inesperada');
-    liveData = json.data;
+    liveData       = json.data;
     liveEdAnalisis = json.edAnalisis || null;
     const dates = liveData.map(d => d.date).filter(Boolean).sort();
     if (dates.length) {
@@ -404,38 +435,6 @@ async function syncFromSheet() {
   }
 }
 
-function setStatus(html, cls) {
-  const el = document.getElementById('sync-status');
-  el.innerHTML = html;
-  el.className = 'sync-status ' + (cls || '');
-}
-
-function activeData() { return liveData || RAW; }
-
-// ── CHART HELPERS ─────────────────────────────────────────────────────────────
-const MUTED = '#9DA5A8';
-const GRID  = 'rgba(255,255,255,0.05)';
-const EXEC  = '#4CAF7D';
-const PROC  = '#FF5C33';
-const ZERO  = '#2e2e2e';
-const base  = { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} };
-const ax    = {
-  x: { ticks:{color:MUTED, font:{size:10, family:"Roboto"}}, grid:{display:false} },
-  y: { ticks:{color:MUTED, font:{size:10, family:"Roboto"}}, grid:{color:GRID} }
-};
-
-function destroyAll() {
-  Object.values(charts).forEach(c => c.destroy());
-  charts = {};
-}
-function showEmpty(id, show) {
-  const el = document.getElementById('empty-' + id);
-  const cv = document.getElementById('c-' + id);
-  if (!el || !cv) return;
-  el.style.display = show ? 'flex' : 'none';
-  cv.style.display = show ? 'none' : 'block';
-}
-
 // ── UPDATE ────────────────────────────────────────────────────────────────────
 function update() {
   const from = document.getElementById('date-from').value;
@@ -444,57 +443,28 @@ function update() {
 
   destroyAll();
 
-  const total   = data.length;
-  const exec    = data.filter(d => d.Estatus === 'Ejecutado').length;
-  const proc    = data.filter(d => d.Estatus === 'En proceso').length;
-  const edeport = [...new Set(
-    data.filter(d => d.Sector === 'Elementos Deportivos').map(d => d.Sede)
-  )].length;
-  const edeportReqs = data.filter(d => d.Sector === 'Elementos Deportivos').length;
+  // KPIs
+  const total      = data.length;
+  const exec       = data.filter(d => d.Estatus === 'Ejecutado').length;
+  const proc       = data.filter(d => d.Estatus === 'En proceso').length;
+  const edReqs     = data.filter(d => d.Sector === 'Elementos Deportivos').length;
+  const edSedes    = new Set(data.filter(d => d.Sector === 'Elementos Deportivos').map(d => d.Sede)).size;
 
-  document.getElementById('k-total').textContent    = total;
-  document.getElementById('k-exec').textContent     = exec;
-  document.getElementById('k-proc').textContent     = proc;
-  document.getElementById('k-edeport').textContent  = edeport;
-  document.getElementById('k-exec-pct').textContent = total ? Math.round(exec/total*100) + '% del total' : '—';
-  document.getElementById('k-proc-pct').textContent = total ? Math.round(proc/total*100) + '% del total' : '—';
-  document.getElementById('k-edeport-sub').textContent = edeportReqs + (edeportReqs === 1 ? ' reclamo en ' : ' reclamos en ') + edeport + (edeport === 1 ? ' sede' : ' sedes');
-  document.getElementById('range-label').innerHTML  = 'Mostrando <strong>' + total + '</strong> requerimiento' + (total !== 1 ? 's' : '') + ' · ' + from + ' → ' + to;
+  document.getElementById('k-total').textContent   = total;
+  document.getElementById('k-exec').textContent    = exec;
+  document.getElementById('k-proc').textContent    = proc;
+  document.getElementById('k-edeport').textContent = edSedes;
+  document.getElementById('k-exec-pct').textContent  = total ? Math.round(exec/total*100) + '% del total' : '—';
+  document.getElementById('k-proc-pct').textContent  = total ? Math.round(proc/total*100) + '% del total' : '—';
+  document.getElementById('k-edeport-sub').textContent = edReqs + (edReqs===1?' reclamo en ':' reclamos en ') + edSedes + (edSedes===1?' sede':' sedes');
+  document.getElementById('range-label').innerHTML = 'Mostrando <strong>' + total + '</strong> requerimiento' + (total!==1?'s':'') + ' · ' + from + ' → ' + to;
 
-  // Elementos Deportivos — mostrar análisis IA
+  // Elementos Deportivos IA section
   edData = data.filter(d => d.Sector === 'Elementos Deportivos' && d.Descripcion);
-  const edSection = document.getElementById('ed-section');
-  edSection.style.display = edData.length > 0 ? 'block' : 'none';
+  document.getElementById('ed-section').style.display = edData.length > 0 ? 'block' : 'none';
   renderEdAnalisis();
-}
 
-function renderEdAnalisis() {
-  const resultsEl = document.getElementById('ed-results');
-  if (!liveEdAnalisis) {
-    resultsEl.innerHTML = '<p style="font-size:12px;color:var(--muted)">Sincronizá los datos para ver el análisis.</p>';
-    return;
-  }
-  if (liveEdAnalisis.error) {
-    resultsEl.innerHTML = '<p style="font-size:12px;color:#ff6b6b">Error en análisis IA: ' + liveEdAnalisis.error + '</p>';
-    return;
-  }
-  if (!liveEdAnalisis.items?.length) {
-    resultsEl.innerHTML = '<p style="font-size:12px;color:var(--muted)">No se identificaron ítems del catálogo.</p>';
-    return;
-  }
-  resultsEl.innerHTML = `
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">
-      ${liveEdAnalisis.items.map(item => `
-        <div style="background:var(--bg3);border-radius:6px;padding:.75rem 1rem;border:1px solid rgba(255,92,51,.12)">
-          <div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:.3rem">${item.nombre}</div>
-          <div style="font-size:22px;font-weight:700;color:var(--orange);line-height:1">${item.cantidad}</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:.3rem">${item.sedes.join(', ')}</div>
-        </div>
-      `).join('')}
-    </div>
-    <p style="font-size:10px;color:var(--muted);margin-top:.75rem;letter-spacing:.04em">ANÁLISIS IA · Gemini · actualizado al sincronizar</p>`;
-
-  // DÍAS
+  // GRÁFICO 1 — Días (línea)
   const byDay = data.reduce((m, d) => { m[d.date] = (m[d.date]||0)+1; return m; }, {});
   const allDates = [];
   if (from && to) {
@@ -515,22 +485,19 @@ function renderEdAnalisis() {
           data: allDates.map(d => byDay[d] || 0),
           borderColor: PROC,
           backgroundColor: 'rgba(255,92,51,0.08)',
-          fill: true,
-          tension: 0.4,
+          fill: true, tension: 0.4,
           pointBackgroundColor: PROC,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          borderWidth: 2
+          pointRadius: 4, pointHoverRadius: 6, borderWidth: 2
         }]
       },
       options: { ...base, scales: {
         x: { ...ax.x },
-        y: { ...ax.y, min: 0, ticks: { ...ax.y.ticks, stepSize: 1 } }
+        y: { ...ax.y, min:0, ticks:{ ...ax.y.ticks, stepSize:1 } }
       } }
     });
   }
 
-  // ÁREAS — donut con %
+  // GRÁFICO 2 — Donut áreas
   const sectorMap = {};
   data.forEach(d => { if (d.Sector) sectorMap[d.Sector] = (sectorMap[d.Sector]||0)+1; });
   const sectorLabels = Object.keys(sectorMap).sort((a,b) => sectorMap[b]-sectorMap[a]);
@@ -542,92 +509,95 @@ function renderEdAnalisis() {
       type: 'doughnut',
       data: {
         labels: sectorLabels,
-        datasets: [{ data: sectorVals, backgroundColor: DONUT_COLORS.slice(0, sectorLabels.length), borderWidth: 0, hoverOffset: 6 }]
+        datasets: [{ data: sectorVals, backgroundColor: DONUT_COLORS.slice(0, sectorLabels.length), borderWidth:0, hoverOffset:6 }]
       },
       options: { ...base,
         cutout: '62%',
         plugins: {
           legend: {
-            display: true,
-            position: 'right',
-            labels: { color: '#C9D1D3', font: { size: 11, family: 'Roboto' }, padding: 12, boxWidth: 10, boxHeight: 10,
+            display: true, position: 'right',
+            labels: { color:'#C9D1D3', font:{size:11, family:'Roboto'}, padding:12, boxWidth:10, boxHeight:10,
               generateLabels: chart => {
                 const ds = chart.data.datasets[0];
-                const total = ds.data.reduce((a,b)=>a+b,0);
-                return chart.data.labels.map((label, i) => ({
-                  text: label + '  ' + Math.round(ds.data[i]/total*100) + '%',
-                  fillStyle: ds.backgroundColor[i],
-                  hidden: false, index: i
+                const t  = ds.data.reduce((a,b)=>a+b,0);
+                return chart.data.labels.map((label,i) => ({
+                  text: label + '  ' + Math.round(ds.data[i]/t*100) + '%',
+                  fillStyle: ds.backgroundColor[i], hidden:false, index:i
                 }));
               }
             }
           },
-          tooltip: { callbacks: {
-            label: ctx => ' ' + ctx.label + ': ' + ctx.raw + ' (' + Math.round(ctx.raw/total*100) + '%)'
-          }}
+          tooltip: { callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.raw + ' (' + Math.round(ctx.raw/total*100) + '%)' } }
         }
       }
     });
   }
 
-  // SEDE — todas, con exec+proc stacked, 0 si no hay
-  const sedeExec = ALL_SEDES.map(s => data.filter(d => d.Sede === s && d.Estatus === 'Ejecutado').length);
-  const sedeProc = ALL_SEDES.map(s => data.filter(d => d.Sede === s && d.Estatus === 'En proceso').length);
-  const sedeTotal = ALL_SEDES.map((_,i) => sedeExec[i] + sedeProc[i]);
-
+  // GRÁFICO 3 — Sedes (todas)
+  const sedeExec  = ALL_SEDES.map(s => data.filter(d => d.Sede===s && d.Estatus==='Ejecutado').length);
+  const sedeProc  = ALL_SEDES.map(s => data.filter(d => d.Sede===s && d.Estatus==='En proceso').length);
+  const sedeTotal = ALL_SEDES.map((_,i) => sedeExec[i]+sedeProc[i]);
   showEmpty('sede', false);
   charts['sede'] = new Chart(document.getElementById('c-sede'), {
     type: 'bar',
     data: {
-      labels: ALL_SEDES.map(s => s.replace(' - ', ' · ')),
+      labels: ALL_SEDES.map(s => s.replace(' - ',' · ')),
       datasets: [
-        {
-          label: 'Ejecutado',
-          data: sedeExec,
-          backgroundColor: sedeExec.map((v, i) => v > 0 ? EXEC : (sedeTotal[i] === 0 ? 'rgba(255,255,255,0.04)' : 'transparent')),
-          borderRadius: 3, stack: 's'
-        },
-        {
-          label: 'En proceso',
-          data: sedeProc,
-          backgroundColor: sedeProc.map(v => v > 0 ? PROC : 'transparent'),
-          borderRadius: 3, stack: 's'
-        },
-        {
-          label: 'Sin reclamos',
-          data: ALL_SEDES.map((_,i) => sedeTotal[i] === 0 ? 0.15 : 0),
-          backgroundColor: 'rgba(255,255,255,0.04)',
-          borderRadius: 3, stack: 's'
-        }
+        { label:'Ejecutado',  data:sedeExec,  backgroundColor:sedeExec.map((v,i) => v>0?EXEC:(sedeTotal[i]===0?'rgba(255,255,255,0.04)':'transparent')), borderRadius:3, stack:'s' },
+        { label:'En proceso', data:sedeProc,  backgroundColor:sedeProc.map(v => v>0?PROC:'transparent'), borderRadius:3, stack:'s' },
+        { label:'Sin reclamos', data:ALL_SEDES.map((_,i) => sedeTotal[i]===0?0.15:0), backgroundColor:'rgba(255,255,255,0.04)', borderRadius:3, stack:'s' }
       ]
     },
     options: { ...base,
       scales: {
-        x: { ...ax.x, ticks: { ...ax.x.ticks, autoSkip: false, maxRotation: 35, font:{size:9} } },
-        y: { ...ax.y, min: 0, ticks: { ...ax.y.ticks, stepSize: 1 } }
+        x: { ...ax.x, ticks:{ ...ax.x.ticks, autoSkip:false, maxRotation:35, font:{size:9} } },
+        y: { ...ax.y, min:0, ticks:{ ...ax.y.ticks, stepSize:1 } }
       },
       plugins: { ...base.plugins,
-        tooltip: { callbacks: {
-          label: ctx => {
-            if (ctx.dataset.label === 'Sin reclamos') return ' Sin reclamos en el período';
-            return ' ' + ctx.dataset.label + ': ' + ctx.raw;
-          }
-        } }
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label==='Sin reclamos' ? ' Sin reclamos en el período' : ' '+ctx.dataset.label+': '+ctx.raw } }
       }
     }
   });
 }
 
+// ── ED ANALISIS RENDER ────────────────────────────────────────────────────────
+function renderEdAnalisis() {
+  const el = document.getElementById('ed-results');
+  if (!liveEdAnalisis) {
+    el.innerHTML = '<p style="font-size:12px;color:var(--muted)">Sincronizá los datos para ver el análisis.</p>';
+    return;
+  }
+  if (liveEdAnalisis.error) {
+    el.innerHTML = '<p style="font-size:12px;color:#ff6b6b">Error IA: ' + liveEdAnalisis.error + '</p>';
+    return;
+  }
+  if (!liveEdAnalisis.items?.length) {
+    el.innerHTML = '<p style="font-size:12px;color:var(--muted)">No se identificaron ítems del catálogo.</p>';
+    return;
+  }
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">
+      ${liveEdAnalisis.items.map(item => `
+        <div style="background:var(--bg3);border-radius:6px;padding:.75rem 1rem;border:1px solid rgba(255,92,51,.12)">
+          <div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:.3rem">${item.nombre}</div>
+          <div style="font-size:22px;font-weight:700;color:var(--orange);line-height:1">${item.cantidad}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:.3rem">${item.sedes.join(', ')}</div>
+        </div>
+      `).join('')}
+    </div>
+    <p style="font-size:10px;color:var(--muted);margin-top:.75rem;letter-spacing:.04em">ANÁLISIS IA · Gemini · actualizado al sincronizar</p>`;
+}
+
+// ── RESET & EVENTS ────────────────────────────────────────────────────────────
 function resetDates() {
-  document.getElementById('date-from').value = '2026-05-05';
-  document.getElementById('date-to').value   = '2026-05-15';
+  const dates = activeData().map(d => d.date).filter(Boolean).sort();
+  document.getElementById('date-from').value = dates[0] || '2026-05-05';
+  document.getElementById('date-to').value   = dates[dates.length-1] || '2026-05-15';
   update();
 }
 
 document.getElementById('date-from').addEventListener('change', update);
 document.getElementById('date-to').addEventListener('change', update);
-
-// Auto-sync al cargar
 window.addEventListener('DOMContentLoaded', () => syncFromSheet());
 </script>
 </body>
