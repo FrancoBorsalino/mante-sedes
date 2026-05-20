@@ -366,7 +366,7 @@
 </footer>
 
 <script>
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzt0V22jRDqy4IoTV17OKQ2cSilUL_wXD1tKB_IFcij0hmSwH-_eqLIasx0ncrADK1p/exec';
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzDcu883YBU7OyD-uVIkTMh-wodTuNaxXopZI9SoTCTe1j8WWKLKGV1oUbKaza_xm9R/exec';
 // ⚠️ IMPORTANTE: el Apps Script debe incluir el campo "Descripcion" (columna F, índice 5)
 
 const ALL_SEDES = ["1 - RECOLETA", "2 - CAÑITAS II", "3 - PALERMO SOHO", "4 - BARRIO NORTE", "5 - GUTIERREZ", "6 - CABILDO", "7 - CABALLITO", "8 - SANTA FE", "9 - ALMAGRO", "10 - URQUIZA", "11 - SCALABRINI", "12 - JUNCAL", "13 - COLEGIALES", "14 - CARRANZA", "15 - HOLMBERG", "18 - PALERMO CHICO", "19 - OLIVOS", "23 - P. CENTENARIO", "24 - TRIUNVIRATO", "25 - DIRECTORIO", "26 - MANSILLA", "30 - NUÑEZ", "31 - MARTINEZ"];
@@ -646,8 +646,11 @@ Respondé SOLO con un JSON válido con este formato exacto, sin texto adicional,
 {"items":[{"nombre":"nombre exacto del catálogo","cantidad":"número o ver descripción","sedes":["sede1","sede2"]}]}`;
 
   try {
-    const url = SHEET_URL + '?action=gemini&prompt=' + encodeURIComponent(prompt);
-    const res = await fetch(url);
+    const res = await fetch(SHEET_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ prompt })
+    });
     const json = await res.json();
     const text = json.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
     const clean = text.replace(/```json|```/g, '').trim();
