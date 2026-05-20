@@ -324,7 +324,15 @@
       </div>
     </div>
 
-    <div class="card full">
+    <div class="card">
+      <div class="card-title">Distribución por área</div>
+      <div class="chart-wrap" style="height:280px">
+        <canvas id="c-areas"></canvas>
+        <div class="empty" id="empty-areas">Sin datos</div>
+      </div>
+    </div>
+
+    <div class="card full" style="grid-column: unset">
       <div class="card-title">Requerimientos por sede · todas las sedes</div>
       <div class="legend">
         <span><span class="lsq" style="background:var(--exec)"></span>Ejecutado</span>
@@ -338,6 +346,19 @@
     </div>
 
   </div>
+  <!-- ELEMENTOS DEPORTIVOS IA -->
+  <div id="ed-section" style="margin-top:12px;display:none">
+    <div class="card" style="border-color:rgba(255,92,51,.25);background:linear-gradient(135deg,var(--bg2) 70%,rgba(255,92,51,.04))">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+        <div class="card-title" style="margin:0">✦ Elementos Deportivos · análisis IA</div>
+        <button id="btn-ed" onclick="analyzeED()" style="background:var(--orange);border:none;color:white;font-family:var(--font);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.4rem 1rem;border-radius:4px;cursor:pointer">Analizar descripciones</button>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:1rem;line-height:1.5">IA identifica y consolida los ítems mencionados en las descripciones del período, normalizando variantes y abreviaciones.</p>
+      <div id="ed-status" style="font-size:11px;color:var(--muted);margin-bottom:.75rem;display:none"></div>
+      <div id="ed-results"></div>
+    </div>
+  </div>
+
 </main>
 
 <footer>
@@ -345,7 +366,8 @@
 </footer>
 
 <script>
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbw-0d3J18yzQtJxf9JYNpcFbRQxjNDqPmR-P4DGugJ_j1DP8enBkhZLx6Vvr1zf-AQh/exec';
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxKkOfxql1GNw7tih3Pgis7FAmFxSlMi9x3otrguMn6Lf8Mj5ONE_NFQx8Sl_8X9aRC/exec';
+// ⚠️ IMPORTANTE: el Apps Script debe incluir el campo "Descripcion" (columna F, índice 5)
 
 const ALL_SEDES = ["1 - RECOLETA", "2 - CAÑITAS II", "3 - PALERMO SOHO", "4 - BARRIO NORTE", "5 - GUTIERREZ", "6 - CABILDO", "7 - CABALLITO", "8 - SANTA FE", "9 - ALMAGRO", "10 - URQUIZA", "11 - SCALABRINI", "12 - JUNCAL", "13 - COLEGIALES", "14 - CARRANZA", "15 - HOLMBERG", "18 - PALERMO CHICO", "19 - OLIVOS", "23 - P. CENTENARIO", "24 - TRIUNVIRATO", "25 - DIRECTORIO", "26 - MANSILLA", "30 - NUÑEZ", "31 - MARTINEZ"];
 
@@ -437,6 +459,14 @@ function update() {
   document.getElementById('k-edeport-sub').textContent = edeportReqs + (edeportReqs === 1 ? ' reclamo en ' : ' reclamos en ') + edeport + (edeport === 1 ? ' sede' : ' sedes');
   document.getElementById('range-label').innerHTML  = 'Mostrando <strong>' + total + '</strong> requerimiento' + (total !== 1 ? 's' : '') + ' · ' + from + ' → ' + to;
 
+  // Elementos Deportivos — datos para IA
+  edData = data.filter(d => d.Sector === 'Elementos Deportivos' && d.Descripcion);
+  const edSection = document.getElementById('ed-section');
+  edSection.style.display = edData.length > 0 ? 'block' : 'none';
+  document.getElementById('ed-results').innerHTML = '';
+  const edStatusEl = document.getElementById('ed-status');
+  if (edStatusEl) edStatusEl.style.display = 'none';
+
   // DÍAS
   const byDay = data.reduce((m, d) => { m[d.date] = (m[d.date]||0)+1; return m; }, {});
   const allDates = [];
@@ -451,19 +481,65 @@ function update() {
   showEmpty('dias', total === 0);
   if (total > 0) {
     charts['dias'] = new Chart(document.getElementById('c-dias'), {
-      type: 'bar',
+      type: 'line',
       data: {
         labels: allDates.map(d => d.slice(5).replace('-','/')),
         datasets: [{
           data: allDates.map(d => byDay[d] || 0),
-          backgroundColor: allDates.map(d => (byDay[d]||0) > 0 ? PROC : 'rgba(255,92,51,0.12)'),
-          borderRadius: 3, borderSkipped: false
+          borderColor: PROC,
+          backgroundColor: 'rgba(255,92,51,0.08)',
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: PROC,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          borderWidth: 2
         }]
       },
       options: { ...base, scales: {
         x: { ...ax.x },
         y: { ...ax.y, min: 0, ticks: { ...ax.y.ticks, stepSize: 1 } }
       } }
+    });
+  }
+
+  // ÁREAS — donut con %
+  const sectorMap = {};
+  data.forEach(d => { if (d.Sector) sectorMap[d.Sector] = (sectorMap[d.Sector]||0)+1; });
+  const sectorLabels = Object.keys(sectorMap).sort((a,b) => sectorMap[b]-sectorMap[a]);
+  const sectorVals   = sectorLabels.map(s => sectorMap[s]);
+  const DONUT_COLORS = ['#FF5C33','#4CAF7D','#5B9CF6','#A78BFA','#F5A623','#E879A0','#34D399','#FB923C'];
+  showEmpty('areas', sectorLabels.length === 0);
+  if (sectorLabels.length > 0) {
+    charts['areas'] = new Chart(document.getElementById('c-areas'), {
+      type: 'doughnut',
+      data: {
+        labels: sectorLabels,
+        datasets: [{ data: sectorVals, backgroundColor: DONUT_COLORS.slice(0, sectorLabels.length), borderWidth: 0, hoverOffset: 6 }]
+      },
+      options: { ...base,
+        cutout: '62%',
+        plugins: {
+          legend: {
+            display: true,
+            position: 'right',
+            labels: { color: MUTED, font: { size: 11, family: 'Roboto' }, padding: 12, boxWidth: 10, boxHeight: 10,
+              generateLabels: chart => {
+                const ds = chart.data.datasets[0];
+                const total = ds.data.reduce((a,b)=>a+b,0);
+                return chart.data.labels.map((label, i) => ({
+                  text: label + '  ' + Math.round(ds.data[i]/total*100) + '%',
+                  fillStyle: ds.backgroundColor[i],
+                  hidden: false, index: i
+                }));
+              }
+            }
+          },
+          tooltip: { callbacks: {
+            label: ctx => ' ' + ctx.label + ': ' + ctx.raw + ' (' + Math.round(ctx.raw/total*100) + '%)'
+          }}
+        }
+      }
     });
   }
 
@@ -521,10 +597,98 @@ function resetDates() {
   update();
 }
 
+// ── ELEMENTOS DEPORTIVOS · IA ────────────────────────────────────────────────
+let edData = []; // descripciones del período actual con Sector = Elementos Deportivos
+
+const CATALOGO = [
+  "Cajón de madera (Box)",
+  "Banda Naranja (baja resistencia)",
+  "Banda Negra (alta resistencia)",
+  "Pelotas 6kg",
+  "Discos 5kg",
+  "Banda de glúteos resistencia baja",
+  "Banda de glúteos resistencia media",
+  "Banda de glúteos resistencia alta",
+  "Corebag",
+  "Sogas",
+  "Anillas",
+  "Miniparalelas",
+  "Chalecos 10kg",
+  "Colchonetas",
+  "Cinturón de lastre",
+  "Magnesio 1kg"
+];
+
+async function analyzeED() {
+  if (!edData.length) return;
+  const btn = document.getElementById('btn-ed');
+  const statusEl = document.getElementById('ed-status');
+  const resultsEl = document.getElementById('ed-results');
+  btn.disabled = true;
+  btn.textContent = '…analizando';
+  statusEl.style.display = 'block';
+  statusEl.innerHTML = '<span class="spin"></span>&nbsp;Claude está leyendo las descripciones...';
+  resultsEl.innerHTML = '';
+
+  const prompt = `Sos un asistente de gestión de equipamiento deportivo de CORE, una cadena de gimnasios.
+
+Tenés el siguiente catálogo oficial de elementos deportivos:
+${CATALOGO.map((c,i) => `${i+1}. ${c}`).join('\n')}
+
+A continuación hay descripciones de reclamos de reposición o rotura de elementos, escritas por supervisores de distintas sedes. Pueden tener errores ortográficos, abreviaciones, o nombres alternativos. Por ejemplo: "bandita naranja" = Banda Naranja, "banda gris" = Banda Negra, "paralelas" = Miniparalelas, "corebag" = Corebag, "discos" = Discos 5kg, "chalecos" = Chalecos 10kg.
+
+Descripciones (cada una con su sede):
+${edData.map(d => `- [${d.Sede}]: "${d.Descripcion}"`).join('\n')}
+
+Tu tarea: identificar qué ítems del catálogo se mencionan en TODAS las descripciones combinadas, y sumar las cantidades cuando estén indicadas. Si no hay cantidad explícita, anotá "ver descripción". Consolidá ítems iguales de distintas sedes sumando cantidades.
+
+Respondé SOLO con un JSON válido con este formato exacto, sin texto adicional, sin markdown:
+{"items":[{"nombre":"nombre exacto del catálogo","cantidad":"número o ver descripción","sedes":["sede1","sede2"]}]}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const json = await res.json();
+    const text = json.content?.map(b => b.text || '').join('').trim();
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+
+    if (!parsed.items?.length) {
+      resultsEl.innerHTML = '<p style="font-size:12px;color:var(--muted)">No se identificaron ítems del catálogo en las descripciones.</p>';
+    } else {
+      resultsEl.innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">
+          ${parsed.items.map(item => `
+            <div style="background:var(--bg3);border-radius:6px;padding:.75rem 1rem;border:1px solid rgba(255,92,51,.12)">
+              <div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:.3rem">${item.nombre}</div>
+              <div style="font-size:22px;font-weight:700;color:var(--orange);line-height:1">${item.cantidad}</div>
+              <div style="font-size:10px;color:var(--muted);margin-top:.3rem">${item.sedes.join(', ')}</div>
+            </div>
+          `).join('')}
+        </div>
+        <p style="font-size:10px;color:var(--muted);margin-top:.75rem;letter-spacing:.04em">ANÁLISIS IA · basado en ${edData.length} descripción${edData.length>1?'es':''} del período</p>`;
+    }
+    statusEl.style.display = 'none';
+  } catch(e) {
+    statusEl.innerHTML = '✗ Error al analizar: ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Analizar descripciones';
+  }
+}
+
 document.getElementById('date-from').addEventListener('change', update);
 document.getElementById('date-to').addEventListener('change', update);
 
-update();
+// Auto-sync al cargar
+window.addEventListener('DOMContentLoaded', () => syncFromSheet());
 </script>
 </body>
 </html>
