@@ -646,17 +646,14 @@ Respondé SOLO con un JSON válido con este formato exacto, sin texto adicional,
 {"items":[{"nombre":"nombre exacto del catálogo","cantidad":"número o ver descripción","sedes":["sede1","sede2"]}]}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch(SHEET_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: prompt }]
-      })
+      body: JSON.stringify({ prompt })
     });
     const json = await res.json();
-    const text = json.content?.map(b => b.text || '').join('').trim();
+    // Gemini response structure
+    const text = json.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
     const clean = text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
 
