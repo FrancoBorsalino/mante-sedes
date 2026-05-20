@@ -349,13 +349,12 @@
   <!-- ELEMENTOS DEPORTIVOS IA -->
   <div id="ed-section" style="margin-top:12px;display:none">
     <div class="card" style="border-color:rgba(255,92,51,.25);background:linear-gradient(135deg,var(--bg2) 70%,rgba(255,92,51,.04))">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
-        <div class="card-title" style="margin:0">✦ Elementos Deportivos · análisis IA</div>
-        <button id="btn-ed" onclick="analyzeED()" style="background:var(--orange);border:none;color:white;font-family:var(--font);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.4rem 1rem;border-radius:4px;cursor:pointer">Analizar descripciones</button>
+      <div style="margin-bottom:.75rem">
+        <div class="card-title" style="margin:0 0 .5rem">✦ Elementos Deportivos · análisis IA</div>
+        <p style="font-size:11px;color:var(--muted);line-height:1.5">Gemini identifica y consolida los ítems mencionados en las descripciones, normalizando variantes y abreviaciones. Se actualiza al sincronizar.</p>
       </div>
-      <p style="font-size:11px;color:var(--muted);margin-bottom:1rem;line-height:1.5">IA identifica y consolida los ítems mencionados en las descripciones del período, normalizando variantes y abreviaciones.</p>
       <div id="ed-status" style="font-size:11px;color:var(--muted);margin-bottom:.75rem;display:none"></div>
-      <div id="ed-results"></div>
+      <div id="ed-results"><p style="font-size:12px;color:var(--muted)">Sincronizá los datos para ver el análisis.</p></div>
     </div>
   </div>
 
@@ -374,6 +373,8 @@ const ALL_SEDES = ["1 - RECOLETA", "2 - CAÑITAS II", "3 - PALERMO SOHO", "4 - B
 const RAW = [{"date": "2026-05-05", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Baños", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-05", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Baños", "Estatus": "En proceso", "Proveedor": "Fer - 866"}, {"date": "2026-05-05", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Recepción", "Estatus": "En proceso", "Proveedor": "Fer - 866"}, {"date": "2026-05-05", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Fer - 866"}, {"date": "2026-05-05", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Baños", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-05", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Entrenamiento", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-06", "Supervisor": "Débora", "Sede": "10 - URQUIZA", "Sector": "Fachada", "Estatus": "En proceso", "Proveedor": null}, {"date": "2026-05-08", "Supervisor": "Débora", "Sede": "10 - URQUIZA", "Sector": "Baños", "Estatus": "Ejecutado", "Proveedor": null}, {"date": "2026-05-08", "Supervisor": "Bautista", "Sede": "18 - PALERMO CHICO", "Sector": "Baños", "Estatus": "En proceso", "Proveedor": "Active Clean"}, {"date": "2026-05-08", "Supervisor": "Bautista", "Sede": "14 - CARRANZA", "Sector": "Limpieza", "Estatus": "Ejecutado", "Proveedor": null}, {"date": "2026-05-08", "Supervisor": "Belén", "Sede": "24 - TRIUNVIRATO", "Sector": "Fachada", "Estatus": "Ejecutado", "Proveedor": "Cerrajería Marina"}, {"date": "2026-05-08", "Supervisor": "Lucas", "Sede": "9 - ALMAGRO", "Sector": "Recepción", "Estatus": "En proceso", "Proveedor": null}, {"date": "2026-05-09", "Supervisor": "Angel", "Sede": "1 - RECOLETA", "Sector": "Paisajismo", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-11", "Supervisor": "Valentin", "Sede": "15 - HOLMBERG", "Sector": "Entrenamiento", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-11", "Supervisor": "Diego", "Sede": "5 - GUTIERREZ", "Sector": "Baños", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-11", "Supervisor": "Angel", "Sede": "1 - RECOLETA", "Sector": "Fachada", "Estatus": "Ejecutado", "Proveedor": "Cerrajería Marina"}, {"date": "2026-05-12", "Supervisor": "Juan", "Sede": "7 - CABALLITO", "Sector": "Limpieza", "Estatus": "Ejecutado", "Proveedor": "Active Clean"}, {"date": "2026-05-12", "Supervisor": "Juan", "Sede": "7 - CABALLITO", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Aldo"}, {"date": "2026-05-12", "Supervisor": "Juan", "Sede": "25 - DIRECTORIO", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Aldo"}, {"date": "2026-05-12", "Supervisor": "Juan", "Sede": "25 - DIRECTORIO", "Sector": "Entrenamiento", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-12", "Supervisor": "Diego", "Sede": "4 - BARRIO NORTE", "Sector": "Entrenamiento", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-12", "Supervisor": "Angel", "Sede": "13 - COLEGIALES", "Sector": "Entrenamiento", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-12", "Supervisor": "Angel", "Sede": "13 - COLEGIALES", "Sector": "Baños", "Estatus": "En proceso", "Proveedor": null}, {"date": "2026-05-12", "Supervisor": "Belén", "Sede": "24 - TRIUNVIRATO", "Sector": "Fachada", "Estatus": "En proceso", "Proveedor": "Fer - 866"}, {"date": "2026-05-12", "Supervisor": "Belén", "Sede": "24 - TRIUNVIRATO", "Sector": "Paisajismo", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-12", "Supervisor": "Belén", "Sede": "24 - TRIUNVIRATO", "Sector": "Recepción", "Estatus": "En proceso", "Proveedor": "Fer - 866"}, {"date": "2026-05-12", "Supervisor": "Belén", "Sede": "24 - TRIUNVIRATO", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Aldo"}, {"date": "2026-05-12", "Supervisor": "Belén", "Sede": "24 - TRIUNVIRATO", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Diego Hiden"}, {"date": "2026-05-13", "Supervisor": "Antonio", "Sede": "3 - PALERMO SOHO", "Sector": "Recepción", "Estatus": "Ejecutado", "Proveedor": null}, {"date": "2026-05-13", "Supervisor": "Antonio", "Sede": "8 - SANTA FE", "Sector": "Recepción", "Estatus": "Ejecutado", "Proveedor": null}, {"date": "2026-05-13", "Supervisor": "Antonio", "Sede": "3 - PALERMO SOHO", "Sector": "Entrenamiento", "Estatus": "Ejecutado", "Proveedor": null}, {"date": "2026-05-13", "Supervisor": "Antonio", "Sede": "3 - PALERMO SOHO", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": null}, {"date": "2026-05-13", "Supervisor": "Valeria", "Sede": "26 - MANSILLA", "Sector": "Limpieza", "Estatus": "Ejecutado", "Proveedor": null}, {"date": "2026-05-13", "Supervisor": "Lucas", "Sede": "11 - SCALABRINI", "Sector": "Fachada", "Estatus": "En proceso", "Proveedor": null}, {"date": "2026-05-14", "Supervisor": "Angel", "Sede": "13 - COLEGIALES", "Sector": "Baños", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-14", "Supervisor": "Diego", "Sede": "4 - BARRIO NORTE", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-14", "Supervisor": "Bautista", "Sede": "18 - PALERMO CHICO", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-14", "Supervisor": "Bautista", "Sede": "18 - PALERMO CHICO", "Sector": "Fachada", "Estatus": "En proceso", "Proveedor": null}, {"date": "2026-05-14", "Supervisor": "Lucas", "Sede": "11 - SCALABRINI", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Aldo"}, {"date": "2026-05-14", "Supervisor": "Angel", "Sede": "30 - NUÑEZ", "Sector": "Entrenamiento", "Estatus": "En proceso", "Proveedor": "Diego Hiden"}, {"date": "2026-05-14", "Supervisor": "Lucas", "Sede": "9 - ALMAGRO", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-14", "Supervisor": "Lucas", "Sede": "11 - SCALABRINI", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-14", "Supervisor": "Lucas", "Sede": "9 - ALMAGRO", "Sector": "Fachada", "Estatus": "Ejecutado", "Proveedor": "Diego Hiden"}, {"date": "2026-05-14", "Supervisor": "Lucas", "Sede": "12 - JUNCAL", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-14", "Supervisor": "Diego", "Sede": "4 - BARRIO NORTE", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-14", "Supervisor": "Lucas", "Sede": "9 - ALMAGRO", "Sector": "Fachada", "Estatus": "En proceso", "Proveedor": "Cristales Coronel"}, {"date": "2026-05-15", "Supervisor": "Lucas", "Sede": "23 - P. CENTENARIO", "Sector": "Recepción", "Estatus": "En proceso", "Proveedor": "Gustavo"}, {"date": "2026-05-15", "Supervisor": "Diego", "Sede": "4 - BARRIO NORTE", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-15", "Supervisor": "Bautista", "Sede": "18 - PALERMO CHICO", "Sector": "Elementos Deportivos", "Estatus": "En proceso", "Proveedor": "Compras"}, {"date": "2026-05-15", "Supervisor": "Juliana", "Sede": "6 - CABILDO", "Sector": "Baños", "Estatus": "En proceso", "Proveedor": null}];
 
 let liveData = null;
+let liveEdAnalisis = null;
+let edData = [];
 let charts = {};
 
 // ── SYNC ─────────────────────────────────────────────────────────────────────
@@ -387,6 +388,7 @@ async function syncFromSheet() {
     const json = await res.json();
     if (!json.ok || !json.data) throw new Error('Respuesta inesperada');
     liveData = json.data;
+    liveEdAnalisis = json.edAnalisis || null;
     const dates = liveData.map(d => d.date).filter(Boolean).sort();
     if (dates.length) {
       document.getElementById('date-from').value = dates[0];
@@ -459,13 +461,38 @@ function update() {
   document.getElementById('k-edeport-sub').textContent = edeportReqs + (edeportReqs === 1 ? ' reclamo en ' : ' reclamos en ') + edeport + (edeport === 1 ? ' sede' : ' sedes');
   document.getElementById('range-label').innerHTML  = 'Mostrando <strong>' + total + '</strong> requerimiento' + (total !== 1 ? 's' : '') + ' · ' + from + ' → ' + to;
 
-  // Elementos Deportivos — datos para IA
+  // Elementos Deportivos — mostrar análisis IA
   edData = data.filter(d => d.Sector === 'Elementos Deportivos' && d.Descripcion);
   const edSection = document.getElementById('ed-section');
   edSection.style.display = edData.length > 0 ? 'block' : 'none';
-  document.getElementById('ed-results').innerHTML = '';
-  const edStatusEl = document.getElementById('ed-status');
-  if (edStatusEl) edStatusEl.style.display = 'none';
+  renderEdAnalisis();
+}
+
+function renderEdAnalisis() {
+  const resultsEl = document.getElementById('ed-results');
+  if (!liveEdAnalisis) {
+    resultsEl.innerHTML = '<p style="font-size:12px;color:var(--muted)">Sincronizá los datos para ver el análisis.</p>';
+    return;
+  }
+  if (liveEdAnalisis.error) {
+    resultsEl.innerHTML = '<p style="font-size:12px;color:#ff6b6b">Error en análisis IA: ' + liveEdAnalisis.error + '</p>';
+    return;
+  }
+  if (!liveEdAnalisis.items?.length) {
+    resultsEl.innerHTML = '<p style="font-size:12px;color:var(--muted)">No se identificaron ítems del catálogo.</p>';
+    return;
+  }
+  resultsEl.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">
+      ${liveEdAnalisis.items.map(item => `
+        <div style="background:var(--bg3);border-radius:6px;padding:.75rem 1rem;border:1px solid rgba(255,92,51,.12)">
+          <div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:.3rem">${item.nombre}</div>
+          <div style="font-size:22px;font-weight:700;color:var(--orange);line-height:1">${item.cantidad}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:.3rem">${item.sedes.join(', ')}</div>
+        </div>
+      `).join('')}
+    </div>
+    <p style="font-size:10px;color:var(--muted);margin-top:.75rem;letter-spacing:.04em">ANÁLISIS IA · Gemini · actualizado al sincronizar</p>`;
 
   // DÍAS
   const byDay = data.reduce((m, d) => { m[d.date] = (m[d.date]||0)+1; return m; }, {});
@@ -595,89 +622,6 @@ function resetDates() {
   document.getElementById('date-from').value = '2026-05-05';
   document.getElementById('date-to').value   = '2026-05-15';
   update();
-}
-
-// ── ELEMENTOS DEPORTIVOS · IA ────────────────────────────────────────────────
-let edData = []; // descripciones del período actual con Sector = Elementos Deportivos
-
-const CATALOGO = [
-  "Cajón de madera (Box)",
-  "Banda Naranja (baja resistencia)",
-  "Banda Negra (alta resistencia)",
-  "Pelotas 6kg",
-  "Discos 5kg",
-  "Banda de glúteos resistencia baja",
-  "Banda de glúteos resistencia media",
-  "Banda de glúteos resistencia alta",
-  "Corebag",
-  "Sogas",
-  "Anillas",
-  "Miniparalelas",
-  "Chalecos 10kg",
-  "Colchonetas",
-  "Cinturón de lastre",
-  "Magnesio 1kg"
-];
-
-async function analyzeED() {
-  if (!edData.length) return;
-  const btn = document.getElementById('btn-ed');
-  const statusEl = document.getElementById('ed-status');
-  const resultsEl = document.getElementById('ed-results');
-  btn.disabled = true;
-  btn.textContent = '…analizando';
-  statusEl.style.display = 'block';
-  statusEl.innerHTML = '<span class="spin"></span>&nbsp;Gemini está leyendo las descripciones...';
-  resultsEl.innerHTML = '';
-
-  const prompt = `Sos un asistente de gestión de equipamiento deportivo de CORE, una cadena de gimnasios.
-
-Tenés el siguiente catálogo oficial de elementos deportivos:
-${CATALOGO.map((c,i) => `${i+1}. ${c}`).join('\n')}
-
-A continuación hay descripciones de reclamos de reposición o rotura de elementos, escritas por supervisores de distintas sedes. Pueden tener errores ortográficos, abreviaciones, o nombres alternativos. Por ejemplo: "bandita naranja" = Banda Naranja, "banda gris" = Banda Negra, "paralelas" = Miniparalelas, "corebag" = Corebag, "discos" = Discos 5kg, "chalecos" = Chalecos 10kg.
-
-Descripciones (cada una con su sede):
-${edData.map(d => `- [${d.Sede}]: "${d.Descripcion}"`).join('\n')}
-
-Tu tarea: identificar qué ítems del catálogo se mencionan en TODAS las descripciones combinadas, y sumar las cantidades cuando estén indicadas. Si no hay cantidad explícita, anotá "ver descripción". Consolidá ítems iguales de distintas sedes sumando cantidades.
-
-Respondé SOLO con un JSON válido con este formato exacto, sin texto adicional, sin markdown:
-{"items":[{"nombre":"nombre exacto del catálogo","cantidad":"número o ver descripción","sedes":["sede1","sede2"]}]}`;
-
-  try {
-    const res = await fetch(SHEET_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ prompt })
-    });
-    const json = await res.json();
-    const text = json.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-    const clean = text.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
-
-    if (!parsed.items?.length) {
-      resultsEl.innerHTML = '<p style="font-size:12px;color:var(--muted)">No se identificaron ítems del catálogo en las descripciones.</p>';
-    } else {
-      resultsEl.innerHTML = `
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">
-          ${parsed.items.map(item => `
-            <div style="background:var(--bg3);border-radius:6px;padding:.75rem 1rem;border:1px solid rgba(255,92,51,.12)">
-              <div style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:.3rem">${item.nombre}</div>
-              <div style="font-size:22px;font-weight:700;color:var(--orange);line-height:1">${item.cantidad}</div>
-              <div style="font-size:10px;color:var(--muted);margin-top:.3rem">${item.sedes.join(', ')}</div>
-            </div>
-          `).join('')}
-        </div>
-        <p style="font-size:10px;color:var(--muted);margin-top:.75rem;letter-spacing:.04em">ANÁLISIS IA · basado en ${edData.length} descripción${edData.length>1?'es':''} del período</p>`;
-    }
-    statusEl.style.display = 'none';
-  } catch(e) {
-    statusEl.innerHTML = '✗ Error al analizar: ' + e.message;
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Analizar descripciones';
-  }
 }
 
 document.getElementById('date-from').addEventListener('change', update);
