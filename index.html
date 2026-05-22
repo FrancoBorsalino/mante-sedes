@@ -633,7 +633,13 @@ function resetDates() {
 
 document.getElementById('date-from').addEventListener('change', update);
 document.getElementById('date-to').addEventListener('change', update);
-window.addEventListener('DOMContentLoaded', () => syncFromSheet());
+
+// Auto-sync robusto
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => syncFromSheet());
+} else {
+  syncFromSheet();
+}
 </script>
 </body>
 </html>
