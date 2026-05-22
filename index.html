@@ -503,15 +503,16 @@ function update() {
   const exec    = data.filter(d => d.Estatus === 'Ejecutado').length;
   const proc    = data.filter(d => d.Estatus === 'En proceso').length;
   const edReqs  = data.filter(d => d.Sector === 'Elementos Deportivos').length;
+  const edEjec  = data.filter(d => d.Sector === 'Elementos Deportivos' && d.Estatus === 'Ejecutado').length;
   const edSedes = new Set(data.filter(d => d.Sector === 'Elementos Deportivos').map(d => d.Sede)).size;
 
   document.getElementById('k-total').textContent    = total;
   document.getElementById('k-exec').textContent     = exec;
   document.getElementById('k-proc').textContent     = proc;
-  document.getElementById('k-edeport').textContent  = edSedes;
+  document.getElementById('k-edeport').textContent  = edReqs;
   document.getElementById('k-exec-pct').textContent  = total ? Math.round(exec/total*100) + '% del total' : '—';
   document.getElementById('k-proc-pct').textContent  = total ? Math.round(proc/total*100) + '% del total' : '—';
-  document.getElementById('k-edeport-sub').textContent = edReqs + (edReqs===1?' reclamo en ':' reclamos en ') + edSedes + (edSedes===1?' sede':' sedes');
+  document.getElementById('k-edeport-sub').textContent = edEjec + ' resueltos · ' + edSedes + (edSedes===1?' sede':' sedes');
   document.getElementById('range-label').innerHTML  = 'Mostrando <strong>' + total + '</strong> requerimiento' + (total!==1?'s':'') + ' · ' + from + ' → ' + to;
 
   // ED section
