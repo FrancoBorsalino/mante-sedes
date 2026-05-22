@@ -600,27 +600,43 @@ function update() {
 
 // ── GRÁFICO ED — barras horizontales con todos los ítems del catálogo
 function renderEdChart(data) {
-  const totals = buildEdTotals(data);
-  const vals   = CATALOGO.map(c => totals[c] || 0);
-  const maxVal = Math.max(...vals);
+  const totalsExec = {};
+  const totalsProc = {};
+  CATALOGO.forEach(c => { totalsExec[c] = 0; totalsProc[c] = 0; });
 
-  // Tabla + mini barras
+  data.filter(d => d.Sector === 'Elementos Deportivos' && d.EdSolicitados).forEach(row => {
+    const parsed = parseEdLine(row.EdSolicitados);
+    if (!parsed) return;
+    if (row.Estatus === 'Ejecutado') totalsExec[parsed.nombre] = (totalsExec[parsed.nombre]||0) + parsed.cantidad;
+    else                             totalsProc[parsed.nombre] = (totalsProc[parsed.nombre]||0) + parsed.cantidad;
+  });
+
   const container = document.getElementById('ed-results');
+  const maxVal = Math.max(...CATALOGO.map(c => (totalsExec[c]||0) + (totalsProc[c]||0)), 1);
+
   container.innerHTML = '<div style="display:flex;flex-direction:column;gap:6px">' +
-    CATALOGO.map((item, i) => {
-      const v   = vals[i];
-      const pct = maxVal > 0 ? (v / maxVal * 100) : 0;
-      const col = v > 0 ? 'var(--orange)' : 'rgba(255,255,255,0.05)';
-      const tc  = v > 0 ? 'var(--text)' : 'var(--muted)';
-      const vc  = v > 0 ? 'var(--orange)' : 'var(--muted)';
+    CATALOGO.map(item => {
+      const ve  = totalsExec[item] || 0;
+      const vp  = totalsProc[item] || 0;
+      const vt  = ve + vp;
+      const pctE = (ve / maxVal * 100).toFixed(1);
+      const pctP = (vp / maxVal * 100).toFixed(1);
+      const tc  = vt > 0 ? 'var(--text)' : 'var(--muted)';
+      const vc  = vt > 0 ? 'var(--text)' : 'var(--muted)';
       return '<div style="display:grid;grid-template-columns:180px 32px 1fr;align-items:center;gap:10px;margin-bottom:4px">' +
-        '<div style="font-size:11px;color:' + tc + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + item + '</div>' +
-        '<div style="font-size:13px;font-weight:700;color:' + vc + ';text-align:right">' + v + '</div>' +
-        '<div style="background:rgba(255,255,255,0.04);border-radius:3px;height:8px;overflow:hidden">' +
-          '<div style="width:' + pct + '%;height:100%;background:' + col + ';border-radius:3px"></div>' +
+        '<div style="font-size:11px;color:' + tc + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="' + item + '">' + item + '</div>' +
+        '<div style="font-size:13px;font-weight:700;color:' + vc + ';text-align:right">' + (vt || '') + '</div>' +
+        '<div style="background:rgba(255,255,255,0.04);border-radius:3px;height:8px;overflow:hidden;display:flex;cursor:default" title="Ejecutado: ' + ve + ' · En proceso: ' + vp + '">' +
+          '<div style="width:' + pctE + '%;height:100%;background:#4CAF7D"></div>' +
+          '<div style="width:' + pctP + '%;height:100%;background:#FF5C33"></div>' +
         '</div></div>';
     }).join('') +
-  '</div><p style="font-size:10px;color:var(--muted);margin-top:1rem;letter-spacing:.04em">BASADO EN COLUMNA ELEMENTOS DEPORTIVOS SOLICITADOS · período seleccionado</p>';
+  '</div>' +
+  '<div style="display:flex;gap:14px;margin-top:.75rem">' +
+    '<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:#4CAF7D;display:inline-block"></span>Ejecutado</span>' +
+    '<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:9px;height:9px;border-radius:2px;background:#FF5C33;display:inline-block"></span>En proceso</span>' +
+  '</div>' +
+  '<p style="font-size:10px;color:var(--muted);margin-top:.5rem;letter-spacing:.04em">BASADO EN COLUMNA ELEMENTOS DEPORTIVOS SOLICITADOS · período seleccionado</p>';
 }
 
 // ── RESET & EVENTS
